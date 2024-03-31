@@ -24,3 +24,9 @@ button:hover {
   grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-gap: 20px;
 }
+
+.status-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
