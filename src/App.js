@@ -1,5 +1,5 @@
 import "./App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import SingleCard from "./components/SingleCard";
 
 const cardImages = [
@@ -13,11 +13,13 @@ const cardImages = [
 
 function App() {
   const [cards, setCards] = useState([]);
-  const [turns, setTurns] = useState(0);
+  const turnsRef = useRef(0);
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
-  const [disabled, setDisabled] = useState(false)
+  const [disabled, setDisabled] = useState(false);
+  const [matchedParis, setMatchedPairs] = useState(0);
   const [timer, setTimer] = useState(0);
+  const timerRef = useRef(null);
 
   const handleChoice = (card) => {
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
@@ -31,17 +33,18 @@ function App() {
         id: index,
         matched: false,
       }));
-    
-    setChoiceOne(null)
-    setChoiceTwo(null)
+
+    setChoiceOne(null);
+    setChoiceTwo(null);
     setCards(shuffleCardsArr);
-    setTurns(0);
+    turnsRef.current = 0;
     setTimer(0);
+    setMatchedPairs(0);
   };
 
   useEffect(() => {
     if (choiceOne && choiceTwo) {
-      setDisabled(true)
+      setDisabled(true);
       if (choiceOne.src === choiceTwo.src && choiceOne.id !== choiceTwo.id) {
         setCards((prevCards) => {
           return prevCards.map((card) => {
@@ -53,6 +56,7 @@ function App() {
           });
         });
         increaseTurn();
+        setMatchedPairs((prev) => prev + 1);
       } else {
         setTimeout(() => increaseTurn(), 800);
       }
@@ -63,30 +67,44 @@ function App() {
   const increaseTurn = () => {
     setChoiceOne(null);
     setChoiceTwo(null);
-    setTurns((prev) => prev + 1);
-    setDisabled(false)
+    turnsRef.current = turnsRef.current + 1;
+    setDisabled(false);
   };
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setTimer(prevSeconds => prevSeconds + 1);
+      setTimer((prevSeconds) => prevSeconds + 1);
     }, 1000);
 
     // Cleanup function to clear the interval when component unmounts
     return () => clearInterval(intervalId);
-  }, []); 
+  }, []);
   // start a new game automatically
-  useEffect(()=>{
-    newGame()
-  }, [])
+  useEffect(() => {
+    newGame();
+  }, []);
+
+  useEffect(() => {
+    if (matchedParis === 6) {
+      setTimeout(() => {
+        alert(
+          `You win! You used ${turnsRef.current} turns and ${timerRef.current.textContent} seconds.`
+        );
+      }, 500);
+    }
+  }, [matchedParis]);
+
+  console.log(timerRef.current.textContent);
 
   return (
     <div className="App">
       <h1>Magic Match</h1>
       <button onClick={newGame}>New Game</button>
       <div className="status-bar">
-        <div>Time: {timer}</div>
-        <div>Turns: {turns}</div>
+        <div>
+          Time: <span ref={timerRef}>{timer}</span>
+        </div>
+        <div>Turns: {turnsRef.current}</div>
       </div>
       <div className="card-grid">
         {cards.map((card) => (
