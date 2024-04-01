@@ -17,6 +17,7 @@ function App() {
   const [choiceOne, setChoiceOne] = useState(null);
   const [choiceTwo, setChoiceTwo] = useState(null);
   const [disabled, setDisabled] = useState(false)
+  const [timer, setTimer] = useState(0);
 
   const handleChoice = (card) => {
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
@@ -35,12 +36,13 @@ function App() {
     setChoiceTwo(null)
     setCards(shuffleCardsArr);
     setTurns(0);
+    setTimer(0);
   };
 
   useEffect(() => {
     if (choiceOne && choiceTwo) {
       setDisabled(true)
-      if (choiceOne.src === choiceTwo.src) {
+      if (choiceOne.src === choiceTwo.src && choiceOne.id !== choiceTwo.id) {
         setCards((prevCards) => {
           return prevCards.map((card) => {
             if (card.src === choiceOne.src) {
@@ -65,6 +67,14 @@ function App() {
     setDisabled(false)
   };
 
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimer(prevSeconds => prevSeconds + 1);
+    }, 1000);
+
+    // Cleanup function to clear the interval when component unmounts
+    return () => clearInterval(intervalId);
+  }, []); 
   // start a new game automatically
   useEffect(()=>{
     newGame()
@@ -75,7 +85,7 @@ function App() {
       <h1>Magic Match</h1>
       <button onClick={newGame}>New Game</button>
       <div className="status-bar">
-        <div>Time</div>
+        <div>Time: {timer}</div>
         <div>Turns: {turns}</div>
       </div>
       <div className="card-grid">
