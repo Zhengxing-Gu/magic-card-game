@@ -22,7 +22,7 @@ function App() {
     choiceOne ? setChoiceTwo(card) : setChoiceOne(card);
   };
 
-  const shuffleCards = () => {
+  const newGame = () => {
     const shuffleCardsArr = [...cardImages, ...cardImages]
       .sort(() => Math.random() - 0.5)
       .map((cardImage, index) => ({
@@ -67,13 +67,13 @@ function App() {
 
   // start a new game automatically
   useEffect(()=>{
-    shuffleCards()
+    newGame()
   }, [])
 
   return (
     <div className="App">
       <h1>Magic Match</h1>
-      <button onClick={shuffleCards}>New Game</button>
+      <button onClick={newGame}>New Game</button>
       <div className="status-bar">
         <div>Time</div>
         <div>Turns: {turns}</div>
