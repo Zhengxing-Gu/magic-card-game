@@ -94,8 +94,6 @@ function App() {
     }
   }, [matchedParis]);
 
-  console.log(timerRef.current.textContent);
-
   return (
     <div className="App">
       <h1>Magic Match</h1>
